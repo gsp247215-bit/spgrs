@@ -1,0 +1,88 @@
+def calculate_electricity_bill(consumption_kWh):
+    """
+    Calculates the monthly electricity bill based on kWh consumption 
+    using a sample tiered rate structure.
+
+    Args:
+        consumption_kWh (float): Total electricity consumed in kilowatt-hours (kWh).
+
+    Returns:
+        float: The total calculated electricity bill amount.
+    """
+    
+    
+    RATE_TIERS = {
+        50: 3.50,   
+        150: 5.00,  
+        300: 6.50,   
+        float('inf'): 8.00 
+    }
+    
+    
+    SERVICE_CHARGE = 50.00
+    
+    
+    remaining_consumption = consumption_kWh
+    total_charge = 0.0
+    
+    
+    print("\n--- Consumption Breakdown ---")
+    
+    for limit, rate in RATE_TIERS.items():
+       
+        if remaining_consumption <= 0:
+            break
+            
+       
+        if limit == 50:
+            tier_size = limit
+            prev_limit = 0
+        else:
+            
+            sorted_limits = sorted(RATE_TIERS.keys())
+            current_index = sorted_limits.index(limit)
+            prev_limit = sorted_limits[current_index - 1]
+            tier_size = limit - prev_limit
+            
+        
+        tier_consumption = min(remaining_consumption, tier_size)
+        
+        
+        tier_cost = tier_consumption * rate
+        total_charge += tier_cost
+        remaining_consumption -= tier_consumption
+        
+        
+        print(f"Consumed {tier_consumption:.2f} kWh @ Rs{rate:.2f}/kWh = Rs{tier_cost:.2f}")
+
+    
+    total_bill = total_charge + SERVICE_CHARGE
+    
+    print("-----------------------------")
+    print(f"Fixed Monthly Service Charge: Rs{SERVICE_CHARGE:.2f}")
+    print(f"Total Consumption Charge:     Rs{total_charge:.2f}")
+    print("-----------------------------")
+    
+    return total_bill
+
+
+if __name__ == "__main__":
+    
+    
+    while True:
+        try:
+           
+            user_input = input("Enter the total monthly electricity consumption in kWh: ")
+            consumption = float(user_input)
+            if consumption < 0:
+                print("Consumption must be a non-negative number.")
+                continue
+            break
+        except ValueError:
+            print("Invalid input. Please enter a numerical value.")
+
+    
+    final_bill = calculate_electricity_bill(consumption)
+
+    
+    print(f"\n⚡ **Total Electricity Bill for {consumption:.2f} kWh: Rs{final_bill:.2f}** ⚡")
